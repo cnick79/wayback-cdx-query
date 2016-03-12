@@ -76,13 +76,19 @@ WaybackCdxQuery.prototype.queryString = function () {
 /**
  * Call to query the CDX server.
  */
-WaybackCdxQuery.prototype.query = function () {
+WaybackCdxQuery.prototype.query = function (callback) {
 
     return request(this.url(), function (error, response, body) {
-        if (error || response.statusCode !== 200) {
+        if (error) {
+            callback(error);
+        }
+        
+        return callback(body);
+        /*if (error || response.statusCode !== 200) {
             throw new Error('Unsuccessful attempt. Code: ' + response.statusCode);
         }
-        return JSON.parse(body);
+        //return JSON.parse(body);
+        */
     });
 };
 
@@ -109,5 +115,5 @@ var GetNumPages = function () {
 };
 */
 
-module.exports.FIELDS = FIELDS;
+module.exports.FIELDS          = FIELDS;
 module.exports.WaybackCdxQuery = WaybackCdxQuery;

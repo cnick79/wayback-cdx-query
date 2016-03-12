@@ -12,7 +12,14 @@ Installation
 
 Usage
 -------------------
+```
+var WaybackCdxQuery = require('wayback-cdx-query');
 
+var waybackCdx = new WaybackCdxQuery();
+waybackCdx.query( function (error, data) {
+    console.log(data);
+});
+```
 
 
 Support
