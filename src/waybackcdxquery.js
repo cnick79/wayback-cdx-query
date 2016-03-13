@@ -6,8 +6,10 @@
  */
 
 'use strict';
-
-var request = require('request');
+var util        = require('util'),
+    stream      = require('stream'),
+    querystring = require('querystring'),
+    request     = require('request');
 
 var FIELDS  = require('./fields');
 
@@ -24,6 +26,7 @@ var CDX_SERVER = 'http://web.archive.org/cdx/search/cdx',
     };
 
 var defaults = {
+    url: '',
     fl: [
         FIELDS.URLKEY,
         FIELDS.TIMESTAMP,
@@ -58,26 +61,48 @@ function merge(target, obj) {
 }
 
 function WaybackCdxQuery(cfgs) {
-    this.defaults = defaults;
-    this.params = merge(this.defaults, cfgs);
+    var self = this;
+    
+    stream.Transform.call(self, {objectMode: true});
+    
+    //this.defaults = defaults;
+    self.params = cfgs;
+    //this.params = merge(this.defaults, cfgs);
 }
+
+util.inherits(WaybackCdxQuery, stream.Transform);
+
+WaybackCdxQuery.prototype._transform = function (chunk, encoding, done) {
+    console.log(JSON.stringify(chunk));
+    
+    this.push(chunk);
+    
+    done();
+};
+
+WaybackCdxQuery.prototype._flush = function (done) {
+    done();
+};
+    
 
 /**
  * Returns the URL to query.
  */
 WaybackCdxQuery.prototype.url = function () {
-    this.url = CDX_SERVER + '?' + this.queryString();
+    return CDX_SERVER + '?' + this.queryString();
 };
 
 /**
  * Builds a querying based on cfgs.
  */
 WaybackCdxQuery.prototype.queryString = function () {
-    return this.params;
+    return querystring.stringify(this.params);
 };
 
 /**
  * Call to query the CDX server.
+ *
+ * @return error, response, body
  */
 WaybackCdxQuery.prototype.query = function (callback) {
 
@@ -86,13 +111,15 @@ WaybackCdxQuery.prototype.query = function (callback) {
             callback(error);
         }
         
-        return callback(body);
-        /*if (error || response.statusCode !== 200) {
-            throw new Error('Unsuccessful attempt. Code: ' + response.statusCode);
-        }
-        //return JSON.parse(body);
-        */
+        return callback(error, response, body);
     });
+};
+
+// @TODO implement data stream
+// see http://blog.yld.io/2016/01/13/using-streams/#.VuW7hHUrI3o
+WaybackCdxQuery.prototype.queryStream = function (callback) {
+    
+    return request(this.url());
 };
 
 /**
