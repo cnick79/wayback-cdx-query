@@ -9,20 +9,12 @@
 var querystring = require('querystring'),
     request     = require('request');
 
-var WbTransform = require('./transform'),
-    FIELDS      = require('./fields');
+var ArrayTransform = require('./array-transform'),
+    JsonTransform  = require('./json-transform'),
+    FIELDS         = require('./fields');
 
 
-var CDX_SERVER = 'http://web.archive.org/cdx/search/cdx',
-    FIELDS = {
-        URLKEY: "urlkey",
-        TIMESTAMP: "timestamp",
-        ORIGINAL: "original",
-        MIMETYPE: "mimetype",
-        STATUSCODE: "statuscode",
-        DIGEST: "digest",
-        LENGTH: "length"
-    };
+var CDX_SERVER = 'http://web.archive.org/cdx/search/cdx';
 
 var defaults = {
     url: '',
@@ -63,9 +55,15 @@ function WaybackCdxQuery(cfgs) {
     //this.defaults = defaults;
     this.params = cfgs;
 
-    this.transformer = new WbTransform({
+    this.arrayTransform = new ArrayTransform({
         objectMode: true
     });
+
+    this.jsonTransform = new JsonTransform({
+        objectMode: true,
+        fields: defaults.fl
+    });
+
     //this.params = merge(this.defaults, cfgs);
 }
 
@@ -102,7 +100,9 @@ WaybackCdxQuery.prototype.query = function (callback) {
 // @TODO implement data stream
 // see http://blog.yld.io/2016/01/13/using-streams/#.VuW7hHUrI3o
 WaybackCdxQuery.prototype.queryStream = function (callback) {
-    return request(this.url()).pipe( this.transformer );
+    return request(this.url())
+        .pipe( this.arrayTransform )
+        .pipe( this.jsonTransform );
 };
 
 /**

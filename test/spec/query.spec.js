@@ -53,15 +53,12 @@ describe('Querying the Wayback Machine', function () {
         // pull in one record at a time.
         wbQuery.queryStream()
         .pipe(output)
-        .on('data', function () {
-            console.log('data');
-            console.log(arguments);
-        })
         .on('finish', function() {
             console.log('finish');
             done();
         }).on('error', function () {
-            console.log('Error: arguments');
+            console.log('Error');
+            console.log(arguments);
             done();
         });
         //expect(wbQuery.params).toEqual(wbQuery.defaults);
