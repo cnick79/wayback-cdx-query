@@ -21,6 +21,17 @@ waybackCdx.query( function (error, data) {
 });
 ```
 
+or you can write to a stream using the `queryStream` method.
+
+```
+var file = fs.createWriteStream('text.json');
+
+var WaybackCdxQuery = require('wayback-cdx-query');
+
+var waybackCdx = new WaybackCdxQuery();
+waybackCdx.queryStream()
+	.pipe( file );
+
 
 Support
 -------------------
