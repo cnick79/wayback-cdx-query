@@ -32,7 +32,9 @@ util.inherits(JsonTransform, stream.Transform);
 JsonTransform.prototype._transform = function (data, encoding, nextData) {
 
     if (data.length != this._fields.length) {
-        this.emit( "error", new Error( "Uneven number of fields in stream array" ) );    
+        var error = new Error( "Uneven number of fields in stream array" );
+        this.emit( "error", error );
+        nextData(error);
     }
     
     var json = {};
@@ -43,11 +45,14 @@ JsonTransform.prototype._transform = function (data, encoding, nextData) {
         json[key] = data[f];
     }
 
-    this.push(new Buffer(JSON.stringify(json)));
+    this.push(JSON.stringify(json));
 
     nextData();
 };
 
-
+JsonTransform.prototype._flush = function (nextData) {
+    this.push(null);
+    nextData();
+};
 
 module.exports = JsonTransform;

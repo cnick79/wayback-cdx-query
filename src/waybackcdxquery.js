@@ -61,7 +61,7 @@ function WaybackCdxQuery(cfgs) {
 
     this.jsonTransform = new JsonTransform({
         objectMode: true,
-        fields: defaults.fl
+        fields: this.params.fl || defaults.fl
     });
 
     //this.params = merge(this.defaults, cfgs);
@@ -75,7 +75,7 @@ WaybackCdxQuery.prototype.url = function () {
 };
 
 /**
- * Builds a querying based on cfgs.
+ * Builds a querystring based on cfgs.
  */
 WaybackCdxQuery.prototype.queryString = function () {
     return querystring.stringify(this.params);
@@ -97,35 +97,15 @@ WaybackCdxQuery.prototype.query = function (callback) {
     });
 };
 
-// @TODO implement data stream
-// see http://blog.yld.io/2016/01/13/using-streams/#.VuW7hHUrI3o
+/**
+ * Returns a JSON object containing a CDX record.
+ *
+ * @return JSON string
+ */
 WaybackCdxQuery.prototype.queryStream = function (callback) {
     return request(this.url())
         .pipe( this.arrayTransform )
         .pipe( this.jsonTransform );
 };
-
-/**
- * Performs a CDX query but returns a Promise.
- *
- * @return {Promise}
- *
-WaybackCdxQuery.prototype.queryPromise = function () {
-    var self = this;
-    
-    return request.getAsync(this.getCdxUrl()).spread(function (response, body) {
-        if (response.statusCode !== 200) {
-            throw new Error('Unsuccessful attempt. Code: ' + response.statusCode);
-        }
-        return JSON.parse(body);
-    });
-};
-*/
-
-/*
-var GetNumPages = function () {
-    return var http://web.archive.org/cdx/search/cdx?url=archive.org&showNumPages=true
-};
-*/
 
 module.exports = WaybackCdxQuery;

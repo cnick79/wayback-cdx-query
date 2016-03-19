@@ -43,7 +43,7 @@ describe('Querying the Wayback Machine', function () {
         var wbQuery = new WaybackCdxQuery({
             url: 'archive.org',
             //output: 'json',
-            limit: 30
+            limit: 3
         });
         
         var output = fs.createWriteStream('test.txt');
@@ -51,16 +51,16 @@ describe('Querying the Wayback Machine', function () {
         //http://web.archive.org/cdx/search/cdx?url=archive.org&output=json&limit=3
         
         // pull in one record at a time.
-        wbQuery.queryStream()
-        .pipe(output)
+        var stream = wbQuery.queryStream()
+        //.pipe(output)
         .on('finish', function() {
             console.log('finish');
             done();
-        }).on('error', function () {
-            console.log('Error');
-            console.log(arguments);
+        }).on('error', function (error) {
+            console.log('Error: ' + error);
             done();
         });
+        
         //expect(wbQuery.params).toEqual(wbQuery.defaults);
     });
     
