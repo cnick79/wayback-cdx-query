@@ -102,7 +102,7 @@ WaybackCdxQuery.prototype.query = function (callback) {
  *
  * @return JSON string
  */
-WaybackCdxQuery.prototype.queryStream = function (callback) {
+WaybackCdxQuery.prototype.queryStream = function () {
     return request(this.url())
         .pipe( this.arrayTransform )
         .pipe( this.jsonTransform );

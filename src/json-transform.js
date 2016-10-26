@@ -50,9 +50,11 @@ JsonTransform.prototype._transform = function (data, encoding, nextData) {
     nextData();
 };
 
+/*
 JsonTransform.prototype._flush = function (nextData) {
     this.push(null);
     nextData();
 };
+*/
 
 module.exports = JsonTransform;

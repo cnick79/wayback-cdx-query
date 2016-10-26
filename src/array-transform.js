@@ -61,10 +61,11 @@ ArrayTransform.prototype._transform = function (buf, encoding, nextData) {
     nextData();
 };
 
+/*
 ArrayTransform.prototype._flush = function(callback) {
     this.push(null);
     callback();
-};
+};*/
 
 /*
 ArrayTransform.prototype._flush = function (next) {
